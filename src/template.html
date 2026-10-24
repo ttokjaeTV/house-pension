@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>주택연금 계산기 · 똑재TV</title>
+<meta name="description" content="내 집에 살면서 매달 받는 주택연금 월지급금을 한국주택금융공사 월지급금 예시표(2026년 3월 기준, 종신지급방식 정액형)로 계산합니다. 나이·집값·주택 유형별 월 수령액과, 몇 살에 가입하면 오래 받는 동안 가장 많이 받는지 비교해 드립니다.">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+/*__BASE_CSS__*/
+  .cmp-table td.best { color: var(--accent); font-weight: 900; }
+  .cmp-table tr.now td { background: #FFF6EE; }
+  .facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 4px; }
+  .facts > div { background: var(--bg); border-radius: 14px; padding: 14px 16px; font-size: 13.5px; font-weight: 600; color: var(--ink-soft); line-height: 1.65; }
+  .facts b { display: block; font-size: 14.5px; font-weight: 900; color: var(--ink); margin-bottom: 3px; }
+  @media (max-width: 768px) { .facts { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <a href="https://ttokjaetv.github.io/" class="hub-back">← 똑재TV 계산기 모음</a>
+  <header>
+    <div class="logo">
+      <div class="logo-icon">똑</div>
+      <div>
+        <div class="logo-name">똑재TV</div>
+        <div class="logo-sub">HOUSING PENSION CALCULATOR</div>
+      </div>
+    </div>
+    <span class="base-date">2026-03-01 지급표 기준</span>
+  </header>
+
+  <div class="hero">
+    <span class="tag"><span class="dot"></span>주택연금 계산기</span>
+    <h1 class="hero-title">내 집에 살면서<br><span class="underline-mark">매달 얼마</span> 받을 수 있을까?</h1>
+    <p class="hero-desc">
+      한국주택금융공사 <b>월지급금 예시표(2026년 3월 기준, 종신지급방식 정액형)</b>로 나이·집값·주택 유형별 주택연금을 계산하고,<br class="pc-br">
+      <b>몇 살에 가입해야</b> 오래 받는 동안 가장 많이 받는지도 비교해 드립니다.
+    </p>
+  </div>
+
+  <div class="top-cta">
+    <div class="top-cta-text">💡 <strong>집 한 채로 노후 준비</strong>가 더 궁금하신가요? 똑재TV에서 매주 풀어드립니다.</div>
+    <div class="top-cta-links">
+      <a href="https://www.youtube.com/@ttok_jae" target="_blank" rel="noopener" class="top-cta-link primary">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+        똑재TV 구독하기
+      </a>
+      <a href="https://cafe.naver.com/ttokjae" target="_blank" rel="noopener" class="top-cta-link"><span class="naver-mark">N</span>평생 ETF 투자 카페</a>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <button type="button" class="tool-btn" id="share-btn">설정 링크 복사</button>
+    <button type="button" class="tool-btn" id="reset-btn">처음 값으로</button>
+    <a href="#result" class="tool-btn ghost">결과 보기 ↓</a>
+  </div>
+
+  <!-- STEP 01 -->
+  <div class="card">
+    <div class="step-label"><div class="step-line"></div><span class="step-text">STEP 01</span></div>
+    <div class="step-title">나이와 집</div>
+    <div class="step-desc">주택연금은 <b>부부 중 나이가 적은 사람</b>의 나이로 정해요. 집값은 공시가격이 아니라 <b>시세(감정평가액)</b>를 넣어 주세요.</div>
+    <div class="grid-3">
+      <div><label class="label" for="age">부부 중 나이 적은 사람 (만)</label><div class="input-wrap"><input type="text" inputmode="numeric" id="age" value="65"><span class="input-unit">세</span></div><div class="input-hint" id="age-hint"></div></div>
+      <div><label class="label" for="price">집 시세</label><div class="input-wrap"><input type="text" inputmode="numeric" id="price" data-man value="40,000"><span class="input-unit">만원</span></div><div class="input-hint" id="price-hint"></div></div>
+      <div><label class="label" for="until">몇 살까지 받는다고 볼까요?</label><div class="input-wrap"><input type="text" inputmode="numeric" id="until" value="90"><span class="input-unit">세</span></div><div class="input-hint">가입 나이별 비교에 써요</div></div>
+    </div>
+    <div style="margin-top:16px"><label class="label">주택 유형</label>
+      <div class="seg" id="type-seg"><button type="button" data-v="general" class="on">일반주택</button><button type="button" data-v="senior">노인복지주택</button><button type="button" data-v="officetel">주거목적 오피스텔</button></div>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="card" id="result">
+    <div class="step-label"><div class="step-line"></div><span class="step-text">RESULT</span></div>
+    <div class="step-title">결과</div>
+    <div class="verdict" id="verdict"></div>
+    <div class="grid-4">
+      <div class="stat-card accent"><div class="stat-label">매달 받는 돈</div><div class="stat-value" id="s-m">-</div><div class="stat-sub" id="s-m-sub"></div></div>
+      <div class="stat-card"><div class="stat-label">1년</div><div class="stat-value" id="s-y">-</div><div class="stat-sub">월지급금 × 12</div></div>
+      <div class="stat-card"><div class="stat-label" id="s-t-l">90세까지 합계</div><div class="stat-value" id="s-t">-</div><div class="stat-sub" id="s-t-sub"></div></div>
+      <div class="stat-card"><div class="stat-label">5년 늦게 가입하면</div><div class="stat-value" id="s-5">-</div><div class="stat-sub" id="s-5-sub"></div></div>
+    </div>
+    <div class="alerts" id="alerts"></div>
+
+    <div class="sub-title">가입 나이별 비교 <small>같은 집·유형, 표의 나이 사이는 직선으로 이어 계산</small></div>
+    <div class="table-wrap"><table class="data-table cmp-table" id="cmp-table"><thead><tr><th>가입 나이</th><th>매달</th><th>받는 햇수</th><th id="th-total">90세까지 합계</th><th>지금 가입 대비</th></tr></thead><tbody></tbody></table></div>
+  </div>
+
+  <div class="card">
+    <div class="chart-head">
+      <div><div class="chart-title">가입 나이별 매달 받는 돈과 합계</div><div class="chart-subtitle" id="chart-sub"></div></div>
+    </div>
+    <div class="chart-container" style="height:300px"><canvas id="hp-chart"></canvas></div>
+  </div>
+
+  <div class="card">
+    <div class="step-label"><div class="step-line"></div><span class="step-text">KNOW</span></div>
+    <div class="step-title">주택연금, 이것만 알고 가세요</div>
+    <div class="facts">
+      <div><b>누가 가입하나요?</b>부부 중 한 명이 만 55세 이상이고, 집의 공시가격이 12억원 이하면 가입할 수 있어요. 다주택자도 합산 공시가격이 12억원 이하면 가능해요.</div>
+      <div><b>평생 같은 금액</b>정액형은 가입할 때 정해진 금액을 부부가 모두 사망할 때까지 받아요. 가입 뒤 집값이 오르내려도 매달 받는 돈은 그대로예요.</div>
+      <div><b>나중에 정산</b>받은 돈과 이자·보증료는 대출 잔액으로 쌓이고, 나중에 집을 팔아 갚아요. 집값보다 많이 받았어도 상속인에게 더 청구하지 않고, 남으면 상속인에게 돌아가요.</div>
+    </div>
+    <p class="note">가입 조건·보증료·지급 방식(정액형 외 초기증액형·정기증가형, 확정기간·대출상환방식 등)은 한국주택금융공사 안내를 꼭 확인하세요. 정확한 금액은 공사 '예상연금조회'에서 생년월일과 집값으로 조회할 수 있어요.</p>
+  </div>
+
+  <div class="insight-box">
+    <div class="insight-label">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F4D5C4" stroke-width="2.5" stroke-linecap="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/></svg>
+      <span class="insight-label-text">KEY INSIGHT</span>
+    </div>
+    <h3 class="insight-title" id="ins-title">-</h3>
+    <div class="insight-desc" id="ins-desc"></div>
+    <div class="insight-tools">
+      <button type="button" class="cta-link secondary" id="copy-btn">결과 글로 복사</button>
+      <a class="cta-link secondary" id="cal-link" href="https://ttokjaetv.github.io/retire-calendar/" target="_blank" rel="noopener">국민연금·배당과 합쳐 노후 월급 달력으로 →</a>
+      <a class="cta-link secondary" href="https://ttokjaetv.github.io/retire-drawdown/" target="_blank" rel="noopener">노후 자금은 몇 살까지 버틸까? →</a>
+    </div>
+    <div class="insight-cta">
+      <div class="insight-cta-text">📊 집 한 채로 노후 준비하는 법이 더 궁금하다면?</div>
+      <a href="https://www.youtube.com/@ttok_jae" target="_blank" rel="noopener" class="cta-link primary">똑재TV 구독하기</a>
+      <a href="https://cafe.naver.com/ttokjae" target="_blank" rel="noopener" class="cta-link secondary"><span class="naver-mark">N</span>평생 ETF 투자 카페 가입</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="step-label"><div class="step-line"></div><span class="step-text">HOW IT WORKS</span></div>
+    <div class="step-title">계산 방법과 가정</div>
+    <div class="method-grid" style="margin-top:14px">
+      <div class="method-box">
+        <div class="method-t">이렇게 계산해요</div>
+        <ul class="method-list">
+          <li>한국주택금융공사 <a href="https://www.hf.go.kr/ko/sub03/sub03_01_01_02.do" target="_blank" rel="noopener" style="color:var(--accent);font-weight:800">월지급금 예시</a>(종신지급방식 정액형, 2026.03.01. 기준)의 나이 6줄(55·60·65·70·75·80세) × 집값 12칸(1억~12억원) 표를 그대로 씁니다.</li>
+          <li>표 사이의 나이·집값은 <b>직선으로 이어</b> 계산해요(예: 72세는 70세와 75세 값을 2:3으로). 1억원 미만은 1억원 값에 비례해요.</li>
+          <li>공사 예시 문구와 같은 값이 나오는지 확인했어요: 70세·3억원 일반주택 92만 3천원, 노인복지주택 78만 9천원, 주거목적 오피스텔 74만 6천원.</li>
+          <li>'○세까지 합계'는 매달 받는 돈 × 12 × (그 나이 − 가입 나이)로, 물가·이자는 넣지 않은 단순 합이에요.</li>
+        </ul>
+      </div>
+      <div class="method-box">
+        <div class="method-t">계산에 넣지 않은 것</div>
+        <ul class="method-list">
+          <li>80세가 넘으면 표에 없어 80세 값으로 보여 줘요(실제로는 더 받아요). 집값 12억원이 넘는 시세는 12억원 값으로 봐요.</li>
+          <li>공사 실제 산식(생년월일·감정가 반영)과의 차이, 지급표가 매년 바뀌는 것(보통 3월).</li>
+          <li>초기보증료·연보증료·대출이자(대출 잔액에 쌓임), 정액형이 아닌 지급 방식, 우대형(취약 고령자) 추가 지급.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    ※ 이 계산기는 한국주택금융공사 월지급금 예시표(2026.03.01. 기준)를 2026-10-24 공사 누리집에서 확인해 보간한 추정치입니다. 실제 월지급금은 공사 예상연금조회·상담으로 확인하세요. 특정 상품의 가입 권유가 아닙니다.<br>
+    2026-03-01 지급표 기준
+  </footer>
+</div>
+
+<script>
+/*__HF_TABLE__*/
+/*__ENGINE__*/
+
+const $ = id => document.getElementById(id);
+const STORE_KEY = 'tj-house-pension-v1';
+const ST = { type: 'general' };
+const TYPE_NAME = { general: '일반주택', senior: '노인복지주택', officetel: '주거목적 오피스텔' };
+const FIELDS = ['age', 'price', 'until'];
+const DEFAULTS = {}; FIELDS.forEach(id => { DEFAULTS[id] = $(id).value; });
+const A0 = HF_TABLE.ages[0], A1 = HF_TABLE.ages[HF_TABLE.ages.length - 1], PMAX = HF_TABLE.prices[HF_TABLE.prices.length - 1];
+
+function num(id) {
+  const el = $(id); if (!el) return 0;
+  const v = parseFloat(String(el.value).replace(/[^0-9.\-]/g, ''));
+  if (isNaN(v)) return 0;
+  return el.hasAttribute('data-man') ? v * 10000 : v;
+}
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+function fmtMan(n) {
+  const neg = n < 0; n = Math.abs(Math.round(n / 10000));
+  if (n === 0) return '0원';
+  const eok = Math.floor(n / 10000), man = n % 10000;
+  const s = eok ? `${eok.toLocaleString()}억${man ? ' ' + man.toLocaleString() + '만원' : '원'}` : `${man.toLocaleString()}만원`;
+  return (neg ? '−' : '') + s;
+}
+const fmtMan1 = n => { const v = Math.round(n / 1000) / 10; return `${v.toLocaleString()}만원`; };
+
+function readParams() {
+  const age = clamp(Math.round(num('age')) || 65, 40, 110);
+  return { age, price: Math.max(0, num('price')), until: clamp(Math.round(num('until')) || 90, age + 1, 110), type: ST.type };
+}
+
+let chart = null, last = null;
+function render() {
+  const p = readParams();
+  const r = hpMonthly(p.age, p.price, p.type, HF_TABLE);
+  const c = hpCompare(p.age, p.price, p.type, p.until, HF_TABLE);
+  last = { p, r, c };
+  $('age-hint').textContent = p.age < A0 ? `만 ${A0}세부터 가입할 수 있어요` : p.age > A1 ? `표는 ${A1}세까지라 ${A1}세 값으로 보여 줘요` : '';
+  $('price-hint').textContent = p.price > PMAX ? `${fmtMan(PMAX)} 넘는 시세는 ${fmtMan(PMAX)} 값으로 봐요` : '';
+
+  const years = Math.max(0, p.until - p.age), total = r.monthly * 12 * years;
+  const r5 = hpMonthly(p.age + 5, p.price, p.type, HF_TABLE);
+  if (!r.eligible) {
+    $('verdict').innerHTML = `<div class="v-k">결론</div><div class="v-main">아직 가입할 수 없어요</div><div class="v-sub">부부 중 한 명이 만 ${A0}세가 되면 가입할 수 있어요. 아래 표는 ${A0}세에 가입했을 때부터 보여 드려요.</div>`;
+  } else {
+    $('verdict').innerHTML = `<div class="v-k">결론 · ${p.age}세 · ${TYPE_NAME[p.type]} · 시세 ${fmtMan(p.price)}</div>`
+      + `<div class="v-main">평생 매달 <b>${fmtMan1(r.monthly)}</b>을 받아요</div>`
+      + `<div class="v-sub">1년 ${fmtMan(r.monthly * 12)} · ${p.until}세까지 ${years}년이면 ${fmtMan(total)}. 집에 계속 살면서 받고, 부부 중 한 명이 먼저 떠나도 같은 금액이 이어져요.</div>`;
+  }
+  $('s-m').textContent = r.eligible ? fmtMan1(r.monthly) : '-';
+  $('s-m-sub').textContent = r.eligible ? `${p.age}세 가입 · 정액형` : `만 ${A0}세부터`;
+  $('s-y').textContent = r.eligible ? fmtMan(r.monthly * 12) : '-';
+  $('s-t-l').textContent = `${p.until}세까지 합계`;
+  $('s-t').textContent = r.eligible ? fmtMan(total) : '-';
+  $('s-t-sub').textContent = `${years}년 · 물가·이자 뺀 단순 합`;
+  $('s-5').textContent = r5.monthly ? fmtMan1(r5.monthly) : '-';
+  $('s-5-sub').textContent = r.eligible && r5.monthly ? `${p.age + 5}세 · 매달 ${fmtMan1(r5.monthly - r.monthly)} 더` : `${p.age + 5}세 가입`;
+
+  const al = [];
+  if (p.price > PMAX) al.push(['warn', `시세가 ${fmtMan(PMAX)}을 넘어요. 표는 ${fmtMan(PMAX)}까지라 그 값으로 계산했어요. <b>공시가격이 ${fmtMan(PMAX)} 이하</b>여야 가입할 수 있으니 공시가격을 확인하세요.`]);
+  if (p.age > A1) al.push(['info', `표에 ${A1}세까지만 있어 ${A1}세 값으로 보여 줘요. 실제로는 나이가 많을수록 더 받아요.`]);
+  const now0 = c.rows[0] ? c.rows[0].total : 0, gap = c.best ? c.best.total - now0 : 0;
+  if (r.eligible && c.best && c.best.age !== Math.max(p.age, A0) && gap < now0 * 0.02) al.push(['info', `${p.until}세까지 산다고 보면 가입 나이에 따른 합계 차이가 작아요(가장 큰 ${c.best.age}세 가입도 지금보다 ${fmtMan(gap)} 많은 정도). 늦게 가입하면 매달 더 받지만 받는 햇수가 줄어 거의 상쇄돼요.`]);
+  else if (r.eligible && c.best && c.best.age !== Math.max(p.age, A0)) al.push(['info', `${p.until}세까지 산다고 보면 <b>${c.best.age}세 가입</b>이 합계가 가장 커요(${fmtMan(c.best.total)}). 기대 수명을 길게 볼수록 늦게, 짧게 볼수록 일찍 가입하는 쪽의 합계가 커져요. 다만 늦추는 동안은 받지 못하니 그 사이 생활비가 있는지 먼저 따져 보세요.`]);
+  else if (r.eligible) al.push(['ok', `${p.until}세까지 산다고 보면 <b>지금 가입</b>이 합계가 가장 커요.`]);
+  al.push(['info', '주택연금은 대출이라 받는 돈에 소득세가 붙지 않고, 국민연금처럼 건강보험료 소득으로 잡히지 않아요.']);
+  $('alerts').innerHTML = al.map(([k, h]) => `<div class="alert ${k}"><span class="ic">${k === 'warn' ? '!' : k === 'ok' ? '✓' : 'i'}</span><div>${h}</div></div>`).join('');
+
+  $('th-total').textContent = `${p.until}세까지 합계`;
+  const base = c.rows[0] ? c.rows[0].total : 0;
+  $('cmp-table').querySelector('tbody').innerHTML = c.rows.map((x, i) => `<tr class="${i === 0 ? 'now' : ''}"><td>${x.age}세${i === 0 ? ' (지금)' : ''}</td><td>${fmtMan1(x.monthly)}</td><td>${x.years}년</td>`
+    + `<td class="${x === c.best ? 'best' : ''}">${fmtMan(x.total)}${x === c.best ? ' ★' : ''}</td><td>${i === 0 ? '-' : (x.total - base >= 0 ? '+' : '') + fmtMan(x.total - base)}</td></tr>`).join('')
+    || '<tr><td colspan="5" style="text-align:center;color:var(--ink-mute)">비교할 나이가 없어요</td></tr>';
+
+  $('cal-link').href = 'https://ttokjaetv.github.io/retire-calendar/' + (r.monthly ? `?house=${Math.round(r.monthly / 10000)}&age=${p.age}` : '');
+  $('chart-sub').textContent = `${TYPE_NAME[p.type]} · 시세 ${fmtMan(p.price)} · ${p.until}세까지`;
+  renderChart(c);
+  renderInsight(p, r, r5);
+  saveLocal();
+}
+
+const FONT = { family: "'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif" };
+function renderChart(c) {
+  if (typeof Chart === 'undefined') return;
+  if (chart) chart.destroy();
+  chart = new Chart($('hp-chart'), {
+    data: { labels: c.rows.map(x => x.age + '세'), datasets: [
+      { type: 'bar', label: '합계', data: c.rows.map(x => x.total / 1e8), backgroundColor: c.rows.map(x => x === c.best ? '#D9542B' : '#C4A57B'), yAxisID: 'y' },
+      { type: 'line', label: '매달', data: c.rows.map(x => x.monthly / 1e4), borderColor: '#4A5A4A', backgroundColor: '#4A5A4A', pointRadius: 2, yAxisID: 'y2' },
+    ] },
+    options: { responsive: true, maintainAspectRatio: false, animation: false, interaction: { mode: 'index', intersect: false },
+      plugins: { legend: { position: 'bottom', labels: { font: { ...FONT, size: 12, weight: 700 }, boxWidth: 12 } },
+        tooltip: { callbacks: { label: ctx => ctx.dataset.yAxisID === 'y2' ? `매달: ${fmtMan1(ctx.raw * 1e4)}` : `합계: ${fmtMan(ctx.raw * 1e8)}` } } },
+      scales: { x: { ticks: { font: { ...FONT, size: 11 } }, grid: { display: false } },
+        y: { beginAtZero: true, position: 'left', ticks: { font: { ...FONT, size: 11 }, callback: v => (Math.round(v * 10) / 10) + '억' }, grid: { color: '#EDE5D8' } },
+        y2: { beginAtZero: true, position: 'right', ticks: { font: { ...FONT, size: 11 }, callback: v => Math.round(v) + '만' }, grid: { display: false } } } },
+  });
+}
+
+function renderInsight(p, r, r5) {
+  const li = [];
+  $('ins-title').innerHTML = r.eligible ? `집 한 채가 매달 <em>${fmtMan1(r.monthly)}</em>짜리 연금이 돼요` : `만 ${A0}세부터 집이 연금이 돼요`;
+  li.push('주택연금은 <strong>늦게 가입할수록 매달 더</strong> 받지만, 그만큼 받는 햇수가 줄어요. 기다리는 동안의 생활비와 건강·기대수명을 함께 따져 보세요.');
+  li.push('정액형은 <strong>가입 때 금액으로 평생</strong> 받아요. 국민연금처럼 물가에 따라 오르지 않으니, 물가를 따라가는 다른 소득(국민연금·배당)과 함께 계획하세요.');
+  li.push('집값이 많이 오를 것 같다면 늦게, 집값이 떨어질 위험이 걱정된다면 일찍 가입하는 편이 유리할 수 있어요. 가입 뒤에는 집값이 변해도 월지급금이 바뀌지 않아요.');
+  $('ins-desc').innerHTML = `<ul>${li.map(x => `<li>${x}</li>`).join('')}</ul>`;
+}
+
+/* ---- 저장·공유 ---- */
+function collect() { const o = { type: ST.type }; FIELDS.forEach(id => { o[id] = $(id).value; }); return o; }
+function setSeg(v) { ST.type = v; $('type-seg').querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.v === v)); }
+function apply(o) {
+  if (TYPE_NAME[o.type]) setSeg(o.type);
+  FIELDS.forEach(id => { if (o[id] != null) $(id).value = String(o[id]).replace(/[^0-9.,]/g, '').slice(0, 15); });
+  document.querySelectorAll('input[data-man]').forEach(formatMan);
+}
+function saveLocal() { try { localStorage.setItem(STORE_KEY, JSON.stringify(collect())); } catch (e) {} }
+function formatMan(el) {
+  const raw = el.value.replace(/[^0-9]/g, ''); if (raw === '') return;
+  const pos = el.value.length - (el.selectionStart ?? el.value.length);
+  el.value = Number(raw).toLocaleString();
+  try { if (document.activeElement === el) { const np = Math.max(0, el.value.length - pos); el.setSelectionRange(np, np); } } catch (e) {}
+}
+let timer = null;
+function schedule() { clearTimeout(timer); timer = setTimeout(render, 120); }
+document.querySelectorAll('input').forEach(el => {
+  el.addEventListener('input', () => { if (el.hasAttribute('data-man')) formatMan(el); schedule(); });
+  el.addEventListener('change', schedule);
+});
+$('type-seg').querySelectorAll('button').forEach(b => b.addEventListener('click', () => { setSeg(b.dataset.v); render(); }));
+$('share-btn').addEventListener('click', () => {
+  const url = location.origin + location.pathname + '?' + new URLSearchParams(collect()).toString();
+  const done = () => { const b = $('share-btn'); b.textContent = '복사했어요 ✓'; setTimeout(() => { b.textContent = '설정 링크 복사'; }, 1600); };
+  if (navigator.clipboard) navigator.clipboard.writeText(url).then(done, () => prompt('아래 주소를 복사하세요', url)); else prompt('아래 주소를 복사하세요', url);
+});
+$('reset-btn').addEventListener('click', () => { FIELDS.forEach(id => { $(id).value = DEFAULTS[id]; }); setSeg('general'); render(); });
+$('copy-btn').addEventListener('click', () => {
+  if (!last) return;
+  const { p, r, c } = last;
+  const lines = [
+    `[주택연금 계산기 · ${new Date().toISOString().slice(0, 10)}]`,
+    `· ${p.age}세 · ${TYPE_NAME[p.type]} · 시세 ${fmtMan(p.price)} → 매달 ${fmtMan1(r.monthly)} (정액형, 2026.03 지급표 보간)`,
+    `· ${p.until}세까지 합계가 가장 큰 가입 나이: ${c.best ? c.best.age + '세 (' + fmtMan(c.best.total) + ')' : '-'}`,
+    'https://ttokjaetv.github.io/house-pension/',
+  ].join('\n');
+  const b = $('copy-btn'); const ok = () => { b.textContent = '복사했어요 ✓'; setTimeout(() => { b.textContent = '결과 글로 복사'; }, 1600); };
+  if (navigator.clipboard) navigator.clipboard.writeText(lines).then(ok, () => prompt('복사하세요', lines)); else prompt('복사하세요', lines);
+});
+
+(function init() {
+  let o = null;
+  const q = new URLSearchParams(location.search);
+  if ([...q.keys()].length) { o = {}; q.forEach((v, k) => { o[k] = v; }); }
+  else { try { o = JSON.parse(localStorage.getItem(STORE_KEY) || 'null'); } catch (e) { o = null; } }
+  if (o) apply(o);
+  render();
+})();
+</script>
+</body>
+</html>
